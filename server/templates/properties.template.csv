@@ -1,0 +1,2 @@
+property_id,parcel_id,address,city,zip,lat,lon,year_built,property_type,sqft
+R123456,171233AB01200,"2417 NE Example Rd",Bend,97701,44.0601,-121.2901,1979,Single Family Residential,1850

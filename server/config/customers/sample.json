@@ -1,0 +1,14 @@
+{
+  "id": "sample",
+  "name": "Free Sample",
+  "accessKey": "sample",
+  "vertical": "roofing",
+  "plan": "sample",
+  "serviceAreas": [
+    { "id": "bend", "label": "Bend, OR (8 mi)", "market": "bend-or", "center": { "lat": 44.0582, "lon": -121.3153 }, "radiusMi": 8, "zips": [] }
+  ],
+  "propertyTypes": ["residential"],
+  "features": { "export": false, "liveData": true },
+  "maxResultsPerRun": 10,
+  "maskAddresses": false
+}

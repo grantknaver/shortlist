@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+data/cache
+data/usage.json
+data/imports/**/*.csv

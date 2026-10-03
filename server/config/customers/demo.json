@@ -1,0 +1,18 @@
+{
+  "id": "demo",
+  "name": "Demo Roofing Co.",
+  "accessKey": "demo",
+  "vertical": "roofing",
+  "plan": "full",
+  "serviceAreas": [
+    { "id": "bend", "label": "Bend, OR (8 mi)", "market": "bend-or", "center": { "lat": 44.0582, "lon": -121.3153 }, "radiusMi": 8, "zips": ["97701", "97702", "97703"] },
+    { "id": "portland", "label": "Portland, OR (10 mi)", "market": "portland-or", "center": { "lat": 45.5152, "lon": -122.6784 }, "radiusMi": 10, "zips": [] }
+  ],
+  "propertyTypes": ["residential"],
+  "filters": {},
+  "scoring": {},
+  "tuning": {},
+  "features": { "export": true, "liveData": true },
+  "maxResultsPerRun": 100,
+  "maskAddresses": false
+}

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: shortlist-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CONTACT_EMAIL
+        sync: false
+      - key: PORTLANDMAPS_API_KEY
+        sync: false
+    # Optional: attach a persistent disk at /opt/render/project/src/server/data to keep the run log + imports

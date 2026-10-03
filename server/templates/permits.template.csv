@@ -1,0 +1,2 @@
+permit_id,parcel_id,address,lat,lon,issued_date,final_date,type,subtype,description,status
+B-03-1234,171233AB01200,"2417 NE Example Rd",44.0601,-121.2901,2003-06-12,2003-07-20,Residential,Reroof,"Tear off and reroof composition shingles",Final

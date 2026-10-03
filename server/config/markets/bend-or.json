@@ -1,0 +1,106 @@
+{
+  "id": "bend-or",
+  "name": "Bend, OR",
+  "state": "OR",
+  "center": {
+    "lat": 44.0582,
+    "lon": -121.3153
+  },
+  "sources": {
+    "weather": "iem-lsr",
+    "permit": "arcgis",
+    "property": "arcgis"
+  },
+  "csv": {
+    "permits": "data/imports/bend-or/permits.csv",
+    "properties": "data/imports/bend-or/properties.csv",
+    "weather": "data/imports/bend-or/weather.csv"
+  },
+  "settings": {
+    "nwsOffices": [
+      "PDT"
+    ],
+    "reroofPermitCoverage": "full",
+    "reroofPermitCoverageNote": "Bend requires permits for residential reroofing, so permit history is a strong roof-age signal.",
+    "arcgisPermits": {
+      "url": "https://services5.arcgis.com/JisFYcK2mIVg9ueP/arcgis/rest/services/Permit_Applications_Point/FeatureServer/0",
+      "where": "(DeptCode='BLD' AND (TypeDesc IN ('New Construction/Installation','Renovation/Alteration','Addition') OR UPPER(ApplicationDescription) LIKE '%ROOF%' OR UPPER(ApplicationDescription) LIKE '%SHINGLE%')) OR UPPER(ApplicationDescription) LIKE '%SOLAR%' OR UPPER(ApplicationDescription) LIKE '%PHOTOVOLTAIC%'",
+      "dateField": "IssueDate",
+      "fields": {
+        "id": "ApplicationNumber",
+        "parcelId": "TAXLOT",
+        "address": "Address",
+        "type": "TypeDesc",
+        "subtype": "UseDesc",
+        "description": "ApplicationDescription",
+        "issued": "IssueDate",
+        "finaled": "DateFinaled",
+        "status": "StatusDesc",
+        "applied": "ApplicationDate"
+      },
+      "pageSize": 2000,
+      "maxPages": 100
+    },
+    "arcgisProperties": {
+      "parcels": {
+        "url": "https://services5.arcgis.com/JisFYcK2mIVg9ueP/arcgis/rest/services/Bend_Land_Information_System/FeatureServer/0",
+        "where": "RESIDENTIAL=1 AND UNIT_SFD>=1",
+        "idField": "TAXLOT",
+        "typeValue": "residential"
+      },
+      "addresses": {
+        "url": "https://services5.arcgis.com/JisFYcK2mIVg9ueP/arcgis/rest/services/Site_Address_Points/FeatureServer/0",
+        "where": "taxlot IS NOT NULL AND status='Current'",
+        "parcelField": "taxlot",
+        "addressField": "fulladdr",
+        "zipField": "zipcode",
+        "cityField": "municipality"
+      },
+      "improvements": {
+        "url": "https://services1.arcgis.com/znO8Hz1SuVVohYhZ/arcgis/rest/services/Taxlots/FeatureServer/3",
+        "where": "Taxlot LIKE '1711%' OR Taxlot LIKE '1712%' OR Taxlot LIKE '1811%' OR Taxlot LIKE '1812%'",
+        "parcelField": "Taxlot",
+        "yearBuiltField": "Year_Built_1",
+        "sqftField": "Total_Sqft_1",
+        "classField": "Stat_Class_Desc_1"
+      }
+    },
+    "tuning": {
+      "maxProperties": 60000
+    },
+    "permitStructure": {
+      "newConstructionWorkClasses": [
+        "New Construction/Installation"
+      ],
+      "dwellingUseTypes": [
+        "Single Family Dwelling",
+        "Townhome (Attached Single Family Dwelling)",
+        "Duplex",
+        "Manufactured Home/Tiny Home"
+      ],
+      "alterationWorkClasses": [
+        "Renovation/Alteration"
+      ],
+      "descriptionsReliableFrom": "2020-10-01",
+      "inactiveStatuses": [
+        "Canceled",
+        "Cancelled",
+        "Withdrawn",
+        "Void",
+        "Voided",
+        "Expired Application",
+        "Denied"
+      ],
+      "expiredStatuses": [
+        "Expired"
+      ]
+    }
+  },
+  "notes": [
+    "First live validation market: residential reroofs require permits here.",
+    "Weather: NWS Pendleton (PDT) Local Storm Reports via IEM.",
+    "Permits: City of Bend Permit Applications Point (CityView). Descriptions only exist from ~late 2020; pre-2020 reroofs are not identifiable.",
+    "Properties: City BLIS single-family parcels + City site address points + Deschutes County assessor improvements (year built).",
+    "Solar: only described (post-2020) solar permits are identifiable; legacy electrical permits have no description."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@quasar/extras": "^2.1.0",
+    "quasar": "^2.33.2",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@quasar/vite-plugin": "^2.0.2",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "sass-embedded": "^1.105.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vue-tsc": "^3.3.11"
+  },
+  "type": "module"
+}

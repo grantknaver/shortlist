@@ -1,0 +1,26 @@
+{
+  "id": "portland-or",
+  "name": "Portland, OR",
+  "state": "OR",
+  "center": { "lat": 45.5152, "lon": -122.6784 },
+  "sources": {
+    "weather": "iem-lsr",
+    "permit": "portlandmaps",
+    "property": "portlandmaps"
+  },
+  "csv": {
+    "permits": "data/imports/portland-or/permits.csv",
+    "properties": "data/imports/portland-or/properties.csv",
+    "weather": "data/imports/portland-or/weather.csv"
+  },
+  "settings": {
+    "nwsOffices": ["PQR"],
+    "reroofPermitCoverage": "partial",
+    "reroofPermitCoverageNote": "Portland does not require permits for most residential reroofs, so missing permits do not prove an old roof."
+  },
+  "notes": [
+    "Lower-confidence market: year built / original construction are never treated as confident roof ages.",
+    "Weather: NWS Portland (PQR) Local Storm Reports — mostly wind, ice and snow; hail is uncommon.",
+    "Requires PORTLANDMAPS_API_KEY (free; email maps@portlandoregon.gov)."
+  ]
+}
