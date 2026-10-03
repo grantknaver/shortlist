@@ -36,7 +36,7 @@ export const CustomerSchema = z.object({
    * A customer with no key set in the environment cannot sign in.
    */
   vertical: z.string(),
-  /** 'full' = paying customer; 'sample' = free sales sample (≤10 results, no export) */
+  /** 'full' = paying customer; 'sample' = free sales sample (results capped by maxResultsPerRun, never more than 10; no export) */
   plan: z.enum(['full', 'sample']),
   /** one or more service areas; each is bound to a market (geography + data adapters) */
   serviceAreas: z

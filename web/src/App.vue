@@ -155,7 +155,7 @@ const tierCounts = computed(() => {
         <q-icon name="roofing" size="28px" class="q-mr-sm" />
         <q-toolbar-title class="text-weight-bold">SHORTLIST <span class="text-weight-regular text-grey-5">· Roofing</span></q-toolbar-title>
         <template v-if="session">
-          <q-badge v-if="isSample" color="amber-8" class="q-mr-sm">FREE SAMPLE · max 10</q-badge>
+          <q-badge v-if="isSample" color="amber-8" class="q-mr-sm">FREE SAMPLE · max 5</q-badge>
           <span class="text-caption">{{ session.customer.name }}</span>
         </template>
       </q-toolbar>

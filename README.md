@@ -15,7 +15,7 @@ cd server && cp .env.example .env && npm install && npm run dev      # :8787
 cd web && npm install && npm run dev                                  # :5173 (proxies /api)
 ```
 
-Copy `server/.env.example` to `server/.env` (it sets the local keys `demo` and `sample`), then open `http://localhost:5173/?key=demo`, choose a service area, keep **Demo data**, then press **Find Opportunities**. The `sample` key shows the free-sample experience: at most 10 results and no export.
+Copy `server/.env.example` to `server/.env` (it sets the local keys `demo` and `sample`), then open `http://localhost:5173/?key=demo`, choose a service area, keep **Demo data**, then press **Find Opportunities**. The `sample` key shows the free-sample experience: at most 5 results and no export.
 
 ```bash
 cd server

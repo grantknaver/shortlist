@@ -8,6 +8,6 @@
   ],
   "propertyTypes": ["residential"],
   "features": { "export": false, "liveData": true },
-  "maxResultsPerRun": 10,
+  "maxResultsPerRun": 5,
   "maskAddresses": false
 }
