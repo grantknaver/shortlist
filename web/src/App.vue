@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { api, type Filters, type RunResult, type Session } from './api';
 import ResultCard from './components/ResultCard.vue';
@@ -33,6 +33,7 @@ async function connect(k: string) {
     }
     Object.assign(filters, session.value.defaultFilters);
     areaId.value = session.value.serviceAreas[0]?.id ?? '';
+    mode.value = session.value.customer.features.liveData ? 'live' : 'demo';
   } catch (e) {
     session.value = null;
     $q.notify({ type: 'negative', message: (e as Error).message });
@@ -89,10 +90,39 @@ const result = ref<RunResult | null>(null);
 const selected = ref<Set<string>>(new Set());
 const error = ref('');
 
+// ---- progress while a run is in flight (time-based estimate; the server does not stream progress) ----
+const elapsed = ref(0);
+let ticker: ReturnType<typeof setInterval> | undefined;
+const expectedSecs = computed(() => (mode.value === 'live' ? 90 : 3));
+const progressPct = computed(() => Math.min(95, Math.round((elapsed.value / expectedSecs.value) * 95)));
+const overdue = computed(() => elapsed.value > (mode.value === 'live' ? 120 : 15));
+const LIVE_STAGES = [
+  { upTo: 0.1, text: 'Pulling National Weather Service storm reports…' },
+  { upTo: 0.45, text: 'Loading property records for every single-family home in the area…' },
+  { upTo: 0.75, text: 'Loading city permit history (reroofs, new construction, solar)…' },
+  { upTo: Infinity, text: 'Cross-checking roofs, storms and neighbor reroofs, then ranking…' },
+];
+const stageText = computed(() => {
+  if (mode.value !== 'live') return 'Scoring demo properties…';
+  const f = elapsed.value / expectedSecs.value;
+  return LIVE_STAGES.find((st) => f < st.upTo)!.text;
+});
+function startTicker() {
+  elapsed.value = 0;
+  const t0 = Date.now();
+  ticker = setInterval(() => (elapsed.value = Math.floor((Date.now() - t0) / 1000)), 500);
+}
+function stopTicker() {
+  if (ticker) clearInterval(ticker);
+  ticker = undefined;
+}
+onUnmounted(stopTicker);
+
 async function run() {
   if (!session.value) return;
   running.value = true;
   error.value = '';
+  startTicker();
   try {
     result.value = await api.run(key.value, { mode: mode.value, serviceAreaId: areaId.value, filters: { ...filters } });
     selected.value = new Set();
@@ -100,6 +130,7 @@ async function run() {
     error.value = (e as Error).message;
   } finally {
     running.value = false;
+    stopTicker();
   }
 }
 
@@ -183,6 +214,7 @@ const tierCounts = computed(() => {
               </div>
               <div class="col-12 col-sm-4">
                 <q-btn class="full-width find-btn" color="deep-orange-8" size="lg" icon="search" label="Find Opportunities" :loading="running" @click="run" />
+                <div v-if="mode === 'live'" class="text-caption text-grey-7 text-center q-mt-xs">Live search takes 1–2 minutes</div>
               </div>
             </q-card-section>
 
@@ -233,6 +265,26 @@ const tierCounts = computed(() => {
 
           <q-banner v-if="error" class="bg-red-1 text-red-9 q-mb-md" rounded>{{ error }}</q-banner>
 
+          <!-- progress -->
+          <q-card v-if="running" flat bordered class="q-mb-md">
+            <q-card-section>
+              <div class="row items-center q-mb-sm">
+                <q-spinner-dots color="deep-orange-8" size="24px" class="q-mr-sm" />
+                <div class="text-subtitle2">{{ stageText }}</div>
+                <q-space />
+                <div class="text-caption text-grey-8">{{ elapsed }}s</div>
+              </div>
+              <q-linear-progress :value="progressPct / 100" color="deep-orange-8" rounded size="10px" />
+              <div class="text-caption text-grey-7 q-mt-sm">
+                <template v-if="!overdue">
+                  About {{ progressPct }}% (estimated).
+                  <template v-if="mode === 'live'">A live search checks every home in the area and takes 1–2 minutes. Keep this page open.</template>
+                </template>
+                <template v-else>Taking a little longer than usual. Still working, so please keep this page open.</template>
+              </div>
+            </q-card-section>
+          </q-card>
+
           <!-- results -->
           <template v-if="result">
             <q-card flat bordered class="q-mb-md">
@@ -280,11 +332,11 @@ const tierCounts = computed(() => {
             <ResultCard v-for="r in result.results" :key="r.candidate.id" :r="r" :selected="selected.has(r.candidate.id)" @toggle="toggle(r.candidate.id)" />
             <div v-if="!result.results.length" class="text-grey-7 q-pa-lg text-center">No properties matched. Try loosening the filters.</div>
             <div v-if="isSample && result.results.length" class="text-center q-pa-md text-grey-8">
-              This free sample is limited to 10 opportunities. The full system runs across your whole service area with export.
+              This free sample is limited to {{ result.results.length }} opportunities. The full system runs across your whole service area with export.
             </div>
           </template>
 
-          <div v-else class="empty text-center text-grey-7 q-pa-xl">
+          <div v-else-if="!running" class="empty text-center text-grey-7 q-pa-xl">
             <q-icon name="travel_explore" size="48px" />
             <div class="q-mt-sm">Pick a service area and press <b>Find Opportunities</b>.</div>
             <div class="text-caption">Pulls current storm reports + permit history, cross-references them, and ranks properties worth prospecting.</div>
