@@ -8,7 +8,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { findCustomerByKey, getMarket } from '../src/core/config.js';
+import { findCustomerById, getMarket } from '../src/core/config.js';
 import { createContext } from '../src/core/context.js';
 import { runPipeline } from '../src/core/pipeline.js';
 import { VERTICALS } from '../src/verticals/registry.js';
@@ -21,7 +21,7 @@ const areaId = args[0] ?? 'bend';
 const outDir = args[1] ?? 'audit';
 const ablate = args.includes('--no-neighborhood');
 const countMode = args.includes('--neighborhood-count');
-const base = findCustomerByKey('demo')!;
+const base = findCustomerById('demo')!;
 const customer = {
   ...base,
   maxResultsPerRun: 1e9,

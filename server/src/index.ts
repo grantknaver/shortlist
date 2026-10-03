@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { env } from './env.js';
-import { findCustomerByKey, getMarket, loadConfig, type CustomerConfig } from './core/config.js';
+import { customersWithoutKeys, findCustomerByKey, getMarket, loadConfig, type CustomerConfig } from './core/config.js';
 import { createContext } from './core/context.js';
 import { runPipeline } from './core/pipeline.js';
 import { toCsv } from './core/csv.js';
@@ -89,4 +89,8 @@ app.get('/api/runs/:id/export.csv', (req, res) => {
 });
 
 loadConfig();
-app.listen(env.PORT, () => console.log(`API listening on :${env.PORT}`));
+app.listen(env.PORT, () => {
+  console.log(`API listening on :${env.PORT}`);
+  const missing = customersWithoutKeys();
+  if (missing.length) console.warn(`[auth] no access key set (customer cannot sign in): ${missing.join(', ')}`);
+});

@@ -7,6 +7,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 
 const geo = z.object({ lat: z.number(), lon: z.number() });
@@ -29,8 +30,11 @@ export type MarketConfig = z.infer<typeof MarketSchema>;
 export const CustomerSchema = z.object({
   id: z.string(),
   name: z.string(),
-  /** simple shared-secret access key (MVP; real auth deferred) */
-  accessKey: z.string(),
+  /**
+   * Access keys are NEVER stored in these files (they would live forever in git history).
+   * Each customer's key comes from the server environment: ACCESS_KEY_<ID>, e.g. ACCESS_KEY_DEMO.
+   * A customer with no key set in the environment cannot sign in.
+   */
   vertical: z.string(),
   /** 'full' = paying customer; 'sample' = free sales sample (≤10 results, no export) */
   plan: z.enum(['full', 'sample']),
@@ -107,10 +111,33 @@ export function getMarket(id: string): MarketConfig {
   return m;
 }
 
+/** Env var holding a customer's access key: id "acme-roofing" -> ACCESS_KEY_ACME_ROOFING */
+export function accessKeyEnvName(customerId: string) {
+  return `ACCESS_KEY_${customerId.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+}
+
+function keyMatches(given: string, expected: string) {
+  const a = Buffer.from(given);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
 export function findCustomerByKey(key: string | undefined): CustomerConfig | undefined {
   if (!key) return undefined;
-  for (const c of loadConfig().customers.values()) if (c.accessKey === key) return c;
+  for (const c of loadConfig().customers.values()) {
+    const expected = process.env[accessKeyEnvName(c.id)]?.trim();
+    if (expected && keyMatches(key, expected)) return c;
+  }
   return undefined;
+}
+
+export function findCustomerById(id: string): CustomerConfig | undefined {
+  return loadConfig().customers.get(id);
+}
+
+/** Startup check: lists customers that cannot sign in because their key env var is missing. */
+export function customersWithoutKeys(): string[] {
+  return [...loadConfig().customers.values()].filter((c) => !process.env[accessKeyEnvName(c.id)]?.trim()).map((c) => `${c.id} (${accessKeyEnvName(c.id)})`);
 }
 
 export function resolveServerPath(p: string) {

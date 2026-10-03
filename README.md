@@ -15,7 +15,7 @@ cd server && cp .env.example .env && npm install && npm run dev      # :8787
 cd web && npm install && npm run dev                                  # :5173 (proxies /api)
 ```
 
-Open `http://localhost:5173/?key=demo`, choose a service area, keep **Demo data**, then press **Find Opportunities**. The `sample` key shows the free-sample experience: at most 10 results and no export.
+Copy `server/.env.example` to `server/.env` (it sets the local keys `demo` and `sample`), then open `http://localhost:5173/?key=demo`, choose a service area, keep **Demo data**, then press **Find Opportunities**. The `sample` key shows the free-sample experience: at most 10 results and no export.
 
 ```bash
 cd server
@@ -96,3 +96,9 @@ To add a salon or chiropractor vertical, create a new `verticals/<name>/` pack w
 - **API → Render:** `render.yaml` (rootDir `server`). Set `CORS_ORIGINS` to the Pages URL. Attach a disk if you want the run log and imports to survive deploys.
 - **UI → Cloudflare Pages:** root `web`, build `npm run build`, output `dist`, env `VITE_API_URL=https://<render-app>.onrender.com`.
 - API keys live only in the server environment. The browser only sends the customer access key.
+
+## Access keys
+
+Keys are **not** stored in the repo. Each customer file `server/config/customers/<id>.json` gets its key from the server environment variable `ACCESS_KEY_<ID>` (for example `ACCESS_KEY_DEMO`). On Render, set these under **Environment**. A customer with no key set cannot sign in, and the server logs a warning at startup.
+
+To add a customer: create `config/customers/<id>.json` (no key in it), commit, then add `ACCESS_KEY_<ID>` with a long random value in Render.

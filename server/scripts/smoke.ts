@@ -1,10 +1,10 @@
 /** Run the pipeline in demo mode for each service area and print a ranked table. */
-import { findCustomerByKey, getMarket } from '../src/core/config.js';
+import { findCustomerById, getMarket } from '../src/core/config.js';
 import { createContext } from '../src/core/context.js';
 import { runPipeline } from '../src/core/pipeline.js';
 import { VERTICALS } from '../src/verticals/registry.js';
 
-const c = findCustomerByKey(process.argv[2] ?? 'demo')!;
+const c = findCustomerById(process.argv[2] ?? 'demo')!;
 const mode = (process.argv[3] as 'demo' | 'live') ?? 'demo';
 for (const area of c.serviceAreas) {
   const ctx = createContext({ customer: c, serviceArea: area, market: getMarket(area.market), filters: {}, mode });

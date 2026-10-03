@@ -1,7 +1,6 @@
 {
   "id": "demo",
   "name": "Demo Roofing Co.",
-  "accessKey": "demo",
   "vertical": "roofing",
   "plan": "full",
   "serviceAreas": [
